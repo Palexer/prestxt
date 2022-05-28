@@ -1,19 +1,19 @@
 from fpdf import FPDF
 import sys
-from PIL import Image
 
 
 class PDF(FPDF):
-    def __init__(self, orientation="P", unit="mm", format="A4", font_cache_dir=False) -> None:
+    def __init__(self, orientation="P", unit="mm", format="A4", font="Arial", font_cache_dir=False) -> None:
         super().__init__(orientation, unit, format)
+        self.font = font
 
     def add_title(self, text: str, centered=False):
         height = 17.9 if centered else 1.5
-        self.set_font("Helvetica", "B", 42)
+        self.set_font(self.font, "B", 42)
         self.cell(w=0.5, h=height, align="L", txt=text, ln=1)
 
     def add_text(self, text: str):
-        self.set_font("Helvetica", "", 28)
+        self.set_font(self.font, "", 28)
         self.cell(w=1, h=2, align='L', ln=1)
         for line in iter(text.splitlines()):
             self.cell(w=1, h=1.9, align='L', txt=line, ln=1)
@@ -28,11 +28,25 @@ def main():
         print("Please enter a valid path for the input and the output file.")
         sys.exit(1)
 
+    # set font family
+    font = ""
+    if len(sys.argv) == 4:
+        match sys.argv[3].lower():
+            case "serif":
+                font = "Times"
+            case "fixed-width":
+                font = "Courier"
+            case "symbolic":
+                font = "Symbol"
+            case _:
+                font = "Arial"
+
     # create PDF object
     pdf = PDF(
         orientation="L",
         unit="cm",
         format="A4",
+        font=font,
         font_cache_dir=False
     )
 
